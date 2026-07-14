@@ -1,8 +1,20 @@
 {
-  "updated": "2026-07-14T08:50:00Z",
-  "high": [],
+  "updated": "2026-07-14T08:52:41Z",
+  "high": [
+    {
+      "text": "Тестовый таск — настроить дашборд",
+      "priority": "high",
+      "done": false,
+      "category": "work",
+      "deadline": "2026-07-15"
+    }
+  ],
   "medium": [],
   "low": [],
   "notes": [],
-  "categories": ["work", "home", "health"]
+  "categories": [
+    "work",
+    "home",
+    "health"
+  ]
 }
