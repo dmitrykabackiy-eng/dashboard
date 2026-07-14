@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-14T11:14:53Z",
+  "updated": "2026-07-14T12:24:16Z",
   "high": [
     {
       "text": "Тестовый таск — настроить дашборд",
@@ -12,6 +12,12 @@
   "medium": [
     {
       "text": "Добавить в Jira тикет информацию для Pablo (frontend deck)",
+      "priority": "medium",
+      "done": false,
+      "category": "work"
+    },
+    {
+      "text": "Затащить все металлические профиля внутрь фабрики и наставить их на гондолы для покраски",
       "priority": "medium",
       "done": false,
       "category": "work"
