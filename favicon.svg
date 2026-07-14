@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0d1117"/>
+  <!-- Wing left -->
+  <path d="M12 38 L28 24 L18 18 L12 38Z" fill="#58a6ff" opacity="0.9"/>
+  <path d="M17 36 L28 26 L20 21 L17 36Z" fill="#0d1117"/>
+  <!-- Wing right -->
+  <path d="M52 38 L36 24 L46 18 L52 38Z" fill="#58a6ff" opacity="0.9"/>
+  <path d="M47 36 L36 26 L44 21 L47 36Z" fill="#0d1117"/>
+  <!-- Center stem -->
+  <rect x="30" y="20" width="4" height="24" rx="2" fill="#58a6ff"/>
+  <!-- Checkmark -->
+  <path d="M26 44 L30 48 L38 38" stroke="#3fb950" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
