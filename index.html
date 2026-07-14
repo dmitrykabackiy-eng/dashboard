@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Hermes</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --red: #f85149;
+    --yellow: #d2991d;
+    --green: #3fb950;
+    --blue: #58a6ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .updated { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .card h2 { font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .task { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; display: flex; align-items: flex-start; gap: 8px; }
+  .task:last-child { border-bottom: none; }
+  .task .prio { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+  .prio-high { background: var(--red); }
+  .prio-medium { background: var(--yellow); }
+  .prio-low { background: var(--green); }
+  .task .deadline { font-size: 11px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+  .note { padding: 4px 0; font-size: 13px; color: var(--muted); }
+  .note:before { content: '• '; color: var(--blue); }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+  .badge-work { background: #1f3a5f; color: var(--blue); }
+  .badge-home { background: #2d1f3a; color: #bc8cff; }
+  .badge-health { background: #1f3a2d; color: var(--green); }
+  .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+  .full-width { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+<h1>📊 Dashboard <span style="font-size:14px;color:var(--muted);font-weight:normal">— Гермес</span></h1>
+<p class="updated">Обновлено: <span id="ts"></span></p>
+
+<div class="grid">
+  <div class="card full-width">
+    <h2>🔥 Срочно</h2>
+    <div id="high"></div>
+  </div>
+  <div class="card">
+    <h2>📋 В работе</h2>
+    <div id="medium"></div>
+  </div>
+  <div class="card">
+    <h2>✅ Фон / идеи</h2>
+    <div id="low"></div>
+  </div>
+  <div class="card">
+    <h2>📝 Заметки</h2>
+    <div id="notes"></div>
+  </div>
+  <div class="card">
+    <h2>⏰ Ближайшие дедлайны</h2>
+    <div id="deadlines"></div>
+  </div>
+</div>
+
+<script>
+fetch('tasks.json')
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('ts').textContent = new Date(data.updated).toLocaleString('ru-RU');
+
+    function renderTasks(list, containerId) {
+      const el = document.getElementById(containerId);
+      if (!list || list.length === 0) {
+        el.innerHTML = '<div class="empty">Пока пусто</div>';
+        return;
+      }
+      el.innerHTML = list.map(t => `
+        <div class="task">
+          <div class="prio prio-${t.priority || 'medium'}"></div>
+          <span>${t.done ? '<s>' + t.text + '</s>' : t.text}
+            ${t.category ? '<span class="badge badge-' + t.category + '">' + t.category + '</span>' : ''}
+          </span>
+          ${t.deadline ? '<span class="deadline">📅 ' + t.deadline + '</span>' : ''}
+        </div>
+      `).join('');
+    }
+
+    renderTasks(data.high, 'high');
+    renderTasks(data.medium, 'medium');
+    renderTasks(data.low, 'low');
+
+    const notesEl = document.getElementById('notes');
+    if (!data.notes || data.notes.length === 0) {
+      notesEl.innerHTML = '<div class="empty">Пока пусто</div>';
+    } else {
+      notesEl.innerHTML = data.notes.map(n => `<div class="note">${n}</div>`).join('');
+    }
+
+    const dlEl = document.getElementById('deadlines');
+    const all = [...(data.high||[]), ...(data.medium||[])].filter(t => t.deadline && !t.done);
+    all.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+    if (all.length === 0) {
+      dlEl.innerHTML = '<div class="empty">Нет активных дедлайнов</div>';
+    } else {
+      dlEl.innerHTML = all.slice(0, 7).map(t => `
+        <div class="task">
+          <div class="prio prio-${t.priority || 'medium'}"></div>
+          <span>${t.text}</span>
+          <span class="deadline">📅 ${t.deadline}</span>
+        </div>
+      `).join('');
+    }
+  });
+</script>
+</body>
+</html>
