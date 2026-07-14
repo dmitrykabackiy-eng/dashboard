@@ -1,10 +1,10 @@
 {
-  "updated": "2026-07-14T11:08:12Z",
+  "updated": "2026-07-14T11:14:53Z",
   "high": [
     {
       "text": "Тестовый таск — настроить дашборд",
       "priority": "high",
-      "done": false,
+      "done": true,
       "category": "work",
       "deadline": "2026-07-15"
     }
