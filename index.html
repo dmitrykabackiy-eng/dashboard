@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -24,35 +24,77 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    padding: 16px;
+    padding: 12px;
     max-width: 900px;
     margin: 0 auto;
+    -webkit-tap-highlight-color: transparent;
   }
-  h1 { font-size: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .updated { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  h1 { font-size: 18px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .updated { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+  .add-form {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .add-form input, .add-form select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .add-form input[type="text"] { flex: 1; min-width: 120px; }
+  .add-form select { width: 80px; }
+  .add-form button {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 14px;
+    padding: 12px;
   }
-  .card h2 { font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  .task { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; display: flex; align-items: flex-start; gap: 8px; }
+  .card h2 { font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .task { padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; display: flex; align-items: center; gap: 8px; }
   .task:last-child { border-bottom: none; }
-  .task .prio { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
-  .prio-high { background: var(--red); }
-  .prio-medium { background: var(--yellow); }
-  .prio-low { background: var(--green); }
-  .task .deadline { font-size: 11px; color: var(--muted); margin-left: auto; white-space: nowrap; }
-  .note { padding: 4px 0; font-size: 13px; color: var(--muted); }
-  .note:before { content: '• '; color: var(--blue); }
+  .task input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--green); flex-shrink: 0; }
+  .task .text { flex: 1; }
+  .task .done-text { text-decoration: line-through; color: var(--muted); }
+  .task .deadline { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .task .del {
+    color: var(--red);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .task .del:hover { background: #3a1a1a; }
+  .note { padding: 5px 0; font-size: 13px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); }
+  .note:last-child { border-bottom: none; }
+  .note .ntext { flex: 1; color: var(--muted); }
+  .note .del { color: var(--red); cursor: pointer; font-size: 14px; padding: 2px 6px; }
   .badge {
     display: inline-block;
-    font-size: 11px;
-    padding: 2px 6px;
-    border-radius: 10px;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 8px;
     margin-left: 4px;
   }
   .badge-work { background: #1f3a5f; color: var(--blue); }
@@ -60,84 +102,247 @@
   .badge-health { background: #1f3a2d; color: var(--green); }
   .empty { color: var(--muted); font-size: 13px; font-style: italic; }
   .full-width { grid-column: 1 / -1; }
+  .note-form {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .note-form input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .note-form button {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .sync-btn {
+    display: block;
+    margin: 16px auto;
+    background: var(--border);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .sync-bar {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 10px;
+    text-align: center;
+  }
+  .sync-bar textarea {
+    width: 100%;
+    height: 80px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: monospace;
+  }
+  .sync-bar .btns { margin-top: 6px; display: flex; gap: 6px; justify-content: center; }
+  .sync-bar button { padding: 6px 12px; border-radius: 6px; font-size: 12px; border: none; cursor: pointer; }
+  .sync-bar .copy { background: var(--green); color: #000; }
+  .sync-bar .close { background: var(--border); color: var(--text); }
 </style>
 </head>
 <body>
-<h1>📊 Dashboard <span style="font-size:14px;color:var(--muted);font-weight:normal">— Гермес</span></h1>
-<p class="updated">Обновлено: <span id="ts"></span></p>
+<h1>📊 Дашборд — Гера</h1>
+<p class="updated">Обновлено: <span id="ts"></span> · <span id="src"></span></p>
+
+<div class="add-form">
+  <input type="text" id="newTask" placeholder="Новая задача..." autocomplete="off">
+  <select id="newPrio">
+    <option value="high">🔥 Срочно</option>
+    <option value="medium" selected>📋 В работе</option>
+    <option value="low">✅ Фон</option>
+  </select>
+  <button onclick="addTask()">+</button>
+</div>
 
 <div class="grid">
-  <div class="card full-width">
-    <h2>🔥 Срочно</h2>
-    <div id="high"></div>
-  </div>
-  <div class="card">
-    <h2>📋 В работе</h2>
-    <div id="medium"></div>
-  </div>
-  <div class="card">
-    <h2>✅ Фон / идеи</h2>
-    <div id="low"></div>
-  </div>
+  <div class="card full-width"><h2>🔥 Срочно</h2><div id="high"></div></div>
+  <div class="card"><h2>📋 В работе</h2><div id="medium"></div></div>
+  <div class="card"><h2>✅ Фон / идеи</h2><div id="low"></div></div>
   <div class="card">
     <h2>📝 Заметки</h2>
     <div id="notes"></div>
+    <div class="note-form">
+      <input type="text" id="newNote" placeholder="Заметка..." autocomplete="off">
+      <button onclick="addNote()">+</button>
+    </div>
   </div>
-  <div class="card">
-    <h2>⏰ Ближайшие дедлайны</h2>
-    <div id="deadlines"></div>
+  <div class="card"><h2>⏰ Дедлайны</h2><div id="deadlines"></div></div>
+</div>
+
+<button class="sync-btn" onclick="toggleSync()">📋 Скопировать JSON для GitHub</button>
+<div class="sync-bar" id="syncBar">
+  <textarea id="jsonOut" readonly></textarea>
+  <div class="btns">
+    <button class="copy" onclick="copyJson()">📋 Копировать</button>
+    <button class="close" onclick="toggleSync()">Закрыть</button>
   </div>
 </div>
 
 <script>
-fetch('tasks.json?v=' + Date.now())
-  .then(r => r.json())
-  .then(data => {
-    document.getElementById('ts').textContent = new Date(data.updated).toLocaleString('ru-RU');
+const STORAGE_KEY = 'hermes_dashboard';
+let data = { high: [], medium: [], low: [], notes: [], categories: ['work','home','health'], updated: '' };
 
-    function renderTasks(list, containerId) {
-      const el = document.getElementById(containerId);
-      if (!list || list.length === 0) {
-        el.innerHTML = '<div class="empty">Пока пусто</div>';
-        return;
+function load() {
+  // Try localStorage first, then fetch
+  const cached = localStorage.getItem(STORAGE_KEY);
+  fetch('tasks.json?v=' + Date.now())
+    .then(r => r.json())
+    .then(remote => {
+      if (cached) {
+        const local = JSON.parse(cached);
+        // Use whichever is newer
+        const localT = new Date(local.updated || 0).getTime();
+        const remoteT = new Date(remote.updated || 0).getTime();
+        if (localT > remoteT) { data = local; document.getElementById('src').textContent = '(локально)'; }
+        else { data = remote; document.getElementById('src').textContent = '(GitHub)'; }
+      } else {
+        data = remote;
+        document.getElementById('src').textContent = '(GitHub)';
       }
-      el.innerHTML = list.map(t => `
-        <div class="task">
-          <div class="prio prio-${t.priority || 'medium'}"></div>
-          <span>${t.done ? '<s>' + t.text + '</s>' : t.text}
-            ${t.category ? '<span class="badge badge-' + t.category + '">' + t.category + '</span>' : ''}
-          </span>
-          ${t.deadline ? '<span class="deadline">📅 ' + t.deadline + '</span>' : ''}
-        </div>
-      `).join('');
-    }
+      render();
+    })
+    .catch(() => {
+      if (cached) { data = JSON.parse(cached); document.getElementById('src').textContent = '(локально)'; }
+      render();
+    });
+}
 
-    renderTasks(data.high, 'high');
-    renderTasks(data.medium, 'medium');
-    renderTasks(data.low, 'low');
+function save() {
+  data.updated = new Date().toISOString();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  render();
+}
 
-    const notesEl = document.getElementById('notes');
-    if (!data.notes || data.notes.length === 0) {
-      notesEl.innerHTML = '<div class="empty">Пока пусто</div>';
-    } else {
-      notesEl.innerHTML = data.notes.map(n => `<div class="note">${n}</div>`).join('');
-    }
+function addTask() {
+  const input = document.getElementById('newTask');
+  const text = input.value.trim();
+  if (!text) return;
+  const priority = document.getElementById('newPrio').value;
+  data[priority].push({ text, priority, done: false });
+  input.value = '';
+  save();
+}
 
-    const dlEl = document.getElementById('deadlines');
-    const all = [...(data.high||[]), ...(data.medium||[])].filter(t => t.deadline && !t.done);
-    all.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
-    if (all.length === 0) {
-      dlEl.innerHTML = '<div class="empty">Нет активных дедлайнов</div>';
-    } else {
-      dlEl.innerHTML = all.slice(0, 7).map(t => `
-        <div class="task">
-          <div class="prio prio-${t.priority || 'medium'}"></div>
-          <span>${t.text}</span>
-          <span class="deadline">📅 ${t.deadline}</span>
-        </div>
-      `).join('');
+function addNote() {
+  const input = document.getElementById('newNote');
+  const text = input.value.trim();
+  if (!text) return;
+  data.notes.push(text);
+  input.value = '';
+  save();
+}
+
+function toggleTask(priority, idx) {
+  data[priority][idx].done = !data[priority][idx].done;
+  save();
+}
+
+function deleteTask(priority, idx) {
+  data[priority].splice(idx, 1);
+  save();
+}
+
+function deleteNote(idx) {
+  data.notes.splice(idx, 1);
+  save();
+}
+
+function render() {
+  document.getElementById('ts').textContent = new Date(data.updated).toLocaleString('ru-RU');
+
+  function renderTasks(list, containerId, priority) {
+    const el = document.getElementById(containerId);
+    if (!list || list.length === 0) {
+      el.innerHTML = '<div class="empty">Пока пусто</div>';
+      return;
     }
-  });
+    el.innerHTML = list.map((t, i) => `
+      <div class="task">
+        <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${priority}', ${i})">
+        <span class="text ${t.done ? 'done-text' : ''}">${t.text}
+          ${t.category ? '<span class="badge badge-' + t.category + '">' + t.category + '</span>' : ''}
+        </span>
+        ${t.deadline ? '<span class="deadline">📅 ' + t.deadline + '</span>' : ''}
+        <span class="del" onclick="deleteTask('${priority}', ${i})">✕</span>
+      </div>
+    `).join('');
+  }
+
+  renderTasks(data.high, 'high', 'high');
+  renderTasks(data.medium, 'medium', 'medium');
+  renderTasks(data.low, 'low', 'low');
+
+  const notesEl = document.getElementById('notes');
+  if (!data.notes || data.notes.length === 0) {
+    notesEl.innerHTML = '<div class="empty">Пока пусто</div>';
+  } else {
+    notesEl.innerHTML = data.notes.map((n, i) => `
+      <div class="note">
+        <span class="ntext">${n}</span>
+        <span class="del" onclick="deleteNote(${i})">✕</span>
+      </div>
+    `).join('');
+  }
+
+  const dlEl = document.getElementById('deadlines');
+  const all = [...(data.high||[]), ...(data.medium||[])].filter(t => t.deadline && !t.done);
+  all.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+  if (all.length === 0) {
+    dlEl.innerHTML = '<div class="empty">Нет активных дедлайнов</div>';
+  } else {
+    dlEl.innerHTML = all.slice(0, 7).map(t => `
+      <div class="task">
+        <span class="text">${t.text}</span>
+        <span class="deadline">📅 ${t.deadline}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function toggleSync() {
+  const bar = document.getElementById('syncBar');
+  const visible = bar.style.display === 'block';
+  bar.style.display = visible ? 'none' : 'block';
+  if (!visible) {
+    document.getElementById('jsonOut').value = JSON.stringify(data, null, 2);
+  }
+}
+
+function copyJson() {
+  const ta = document.getElementById('jsonOut');
+  ta.select();
+  document.execCommand('copy');
+  alert('Скопировано! Вставь в tasks.json на GitHub → Commit.');
+}
+
+// Enter key to submit
+document.getElementById('newTask').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+document.getElementById('newNote').addEventListener('keydown', e => { if (e.key === 'Enter') addNote(); });
+
+load();
 </script>
 </body>
 </html>
