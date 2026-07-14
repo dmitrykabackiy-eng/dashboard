@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-14T08:52:41Z",
+  "updated": "2026-07-14T11:08:12Z",
   "high": [
     {
       "text": "Тестовый таск — настроить дашборд",
@@ -9,7 +9,14 @@
       "deadline": "2026-07-15"
     }
   ],
-  "medium": [],
+  "medium": [
+    {
+      "text": "Добавить в Jira тикет информацию для Pablo (frontend deck)",
+      "priority": "medium",
+      "done": false,
+      "category": "work"
+    }
+  ],
   "low": [],
   "notes": [],
   "categories": [
