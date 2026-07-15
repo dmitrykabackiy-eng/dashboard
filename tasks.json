@@ -1,10 +1,17 @@
 {
-  "updated": "2026-07-14T16:46:05Z",
+  "updated": "2026-07-15T15:45:54Z",
   "high": [
     {
       "text": "Тестовый таск — настроить дашборд",
       "priority": "high",
       "done": true,
+      "category": "work",
+      "deadline": "2026-07-15"
+    },
+    {
+      "text": "Распечатать модель для вставки молда крыши",
+      "priority": "high",
+      "done": false,
       "category": "work",
       "deadline": "2026-07-15"
     }
