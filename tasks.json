@@ -1,17 +1,44 @@
 {
   "todo": [
-    {"text": "Добавить в Jira тикет информацию для Pablo (frontend deck)", "priority": "medium", "category": "work"},
-    {"text": "Сделать обслуживание гидравлической системы тестового рига + запустить предложение по улучшению гидравлической системы", "priority": "medium", "category": "work"}
+    {
+      "text": "Добавить в Jira тикет информацию для Pablo (frontend deck)",
+      "priority": "medium",
+      "category": "work"
+    },
+    {
+      "text": "Сделать обслуживание гидравлической системы тестового рига + запустить предложение по улучшению гидравлической системы",
+      "priority": "medium",
+      "category": "work"
+    },
+    {
+      "text": "Снять дверцу сплит-системы и помыть",
+      "priority": "medium",
+      "category": "home",
+      "deadline": "2026-07-19"
+    }
   ],
   "in_progress": [
-    {"text": "Распечатать модель для вставки молда крыши", "priority": "high", "category": "work", "deadline": "2026-07-15"}
+    {
+      "text": "Распечатать модель для вставки молда крыши",
+      "priority": "high",
+      "category": "work",
+      "deadline": "2026-07-15"
+    }
   ],
   "done": [
-    {"text": "Добавить недостающие пылесосы в приложение", "priority": "medium", "category": "work"}
+    {
+      "text": "Добавить недостающие пылесосы в приложение",
+      "priority": "medium",
+      "category": "work"
+    }
   ],
   "cancelled": [
-    {"text": "Затащить все металлические профиля внутрь фабрики и наставить их на Гонзало для покраски", "priority": "medium", "category": "work"}
+    {
+      "text": "Затащить все металлические профиля внутрь фабрики и наставить их на Гонзало для покраски",
+      "priority": "medium",
+      "category": "work"
+    }
   ],
   "notes": [],
-  "updated": "2026-07-16T13:30:00Z"
+  "updated": "2026-07-16T17:24:59Z"
 }
