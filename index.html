@@ -61,6 +61,7 @@
   }
   .task:active { cursor: grabbing; }
   .task.dragging { opacity: 0.4; }
+  .task.selected { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
   .task .prio {
     width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
   }
@@ -139,21 +140,23 @@
   <button onclick="addTask()">+</button>
 </div>
 
+<p style="font-size:11px;color:var(--muted);margin:-4px 0 6px">👆 Тапни задачу → тапни заголовок колонки для перемещения</p>
+
 <div class="kanban">
-  <div class="col" id="col-todo" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'todo')">
-    <h2>📋 Сделать <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-todo"></span></h2>
+  <div class="col" id="col-todo">
+    <h2 onclick="moveSelectedTo('todo')">📋 Сделать <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-todo"></span></h2>
     <div id="todo"></div>
   </div>
-  <div class="col" id="col-in_progress" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'in_progress')">
-    <h2>🔄 В процессе <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-in_progress"></span></h2>
+  <div class="col" id="col-in_progress">
+    <h2 onclick="moveSelectedTo('in_progress')">🔄 В процессе <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-in_progress"></span></h2>
     <div id="in_progress"></div>
   </div>
-  <div class="col" id="col-done" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'done')">
-    <h2>✅ Выполнено <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-done"></span></h2>
+  <div class="col" id="col-done">
+    <h2 onclick="moveSelectedTo('done')">✅ Выполнено <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-done"></span></h2>
     <div id="done"></div>
   </div>
-  <div class="col" id="col-cancelled" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'cancelled')">
-    <h2>🚫 Отменено <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-cancelled"></span></h2>
+  <div class="col" id="col-cancelled">
+    <h2 onclick="moveSelectedTo('cancelled')">🚫 Отменено <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-cancelled"></span></h2>
     <div id="cancelled"></div>
   </div>
 </div>
@@ -185,7 +188,6 @@
 <script>
 const STORAGE_KEY = 'hermes_dashboard_v2';
 let data = { todo: [], in_progress: [], done: [], cancelled: [], notes: [], updated: '' };
-let dragTask = null;
 
 function mergeData(local, remote) {
   const merged = JSON.parse(JSON.stringify(remote));
@@ -227,7 +229,7 @@ function load() {
 // Convert old priority-based format to new status-based format
 function compatData(d) {
   if (d.todo !== undefined) return d; // Already v2
-  const r = { todo: [], in_progress: [], done: [], notes: d.notes || [], updated: d.updated };
+  const r = { todo: [], in_progress: [], done: [], cancelled: [], notes: d.notes || [], updated: d.updated };
   ['high', 'medium', 'low'].forEach(p => {
     if (d[p]) d[p].forEach(t => { if (t.done) r.done.push(t); else r.todo.push(t); });
   });
@@ -267,104 +269,32 @@ function deleteNote(idx) {
   save(); render();
 }
 
-// Drag & Drop (mouse + touch)
-let touchClone = null;
-let touchStartX, touchStartY;
-let touchMoved = false;
+// Tap-to-select, tap-column-to-move
+let selected = null; // { column, idx }
 
-function moveTask(fromCol, fromIdx, toCol) {
-  if (fromCol === toCol) return;
-  const task = data[fromCol].splice(fromIdx, 1)[0];
-  data[toCol].push(task);
-  save(); render();
-}
-
-function dragStart(e, column, idx) {
-  dragTask = { column, idx };
-  e.target.classList.add('dragging');
-  if (e.dataTransfer) {
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', '');
+function selectTask(column, idx) {
+  document.querySelectorAll('.task.selected').forEach(t => t.classList.remove('selected'));
+  if (selected && selected.column === column && selected.idx === idx) {
+    // Tap same task → deselect
+    selected = null;
+    return;
   }
-}
-function dragEnd(e) {
-  e.target.classList.remove('dragging');
-  dragTask = null;
-}
-
-function dragOver(e) {
-  e.preventDefault();
-  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-  e.currentTarget.classList.add('drag-over');
-}
-function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
-
-function drop(e, targetCol) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  if (!dragTask) return;
-  moveTask(dragTask.column, dragTask.idx, targetCol);
-  dragTask = null;
-}
-
-// Touch support for mobile
-function touchStart(e, col, idx) {
-  if (e.touches.length !== 1) return;
-  touchMoved = false;
-  dragTask = { column: col, idx: idx };
-  const t = e.touches[0];
-  touchStartX = t.clientX; touchStartY = t.clientY;
-  const el = e.currentTarget;
-  // Create floating clone
-  touchClone = el.cloneNode(true);
-  touchClone.style.position = 'fixed';
-  touchClone.style.zIndex = '9999';
-  touchClone.style.width = el.offsetWidth + 'px';
-  touchClone.style.opacity = '0.85';
-  touchClone.style.pointerEvents = 'none';
-  touchClone.style.left = (t.clientX - 40) + 'px';
-  touchClone.style.top = (t.clientY - 20) + 'px';
-  document.body.appendChild(touchClone);
-  el.classList.add('dragging');
-}
-
-function touchMove(e) {
-  if (!touchClone) return;
-  e.preventDefault();
-  const t = e.touches[0];
-  if (Math.abs(t.clientX - touchStartX) > 5 || Math.abs(t.clientY - touchStartY) > 5) {
-    touchMoved = true;
-  }
-  touchClone.style.left = (t.clientX - 40) + 'px';
-  touchClone.style.top = (t.clientY - 15) + 'px';
-  // Highlight column under finger
-  document.querySelectorAll('.col').forEach(c => c.classList.remove('drag-over'));
-  const el = document.elementFromPoint(t.clientX, t.clientY);
+  selected = { column, idx };
+  // Find and highlight the task element
+  const el = document.getElementById(column);
   if (el) {
-    const col = el.closest('.col');
-    if (col) col.classList.add('drag-over');
+    const tasks = el.querySelectorAll('.task');
+    if (tasks[idx]) tasks[idx].classList.add('selected');
   }
 }
 
-function touchEnd(e) {
-  if (touchClone) { touchClone.remove(); touchClone = null; }
-  document.querySelectorAll('.col').forEach(c => c.classList.remove('drag-over'));
-  const el = e.currentTarget;
-  el.classList.remove('dragging');
-  if (!dragTask || !touchMoved) { dragTask = null; return; }
-  const t = e.changedTouches[0];
-  const under = document.elementFromPoint(t.clientX, t.clientY);
-  if (under) {
-    const col = under.closest('.col');
-    if (col) {
-      const targetCol = col.querySelector('[id]')?.id;
-      if (targetCol && data[targetCol] !== undefined) {
-        moveTask(dragTask.column, dragTask.idx, targetCol);
-      }
-    }
-  }
-  dragTask = null;
-  touchMoved = false;
+function moveSelectedTo(targetCol) {
+  if (!selected) return;
+  if (selected.column === targetCol) { selected = null; render(); return; }
+  const task = data[selected.column].splice(selected.idx, 1)[0];
+  data[targetCol].push(task);
+  selected = null;
+  save(); render();
 }
 
 function render() {
@@ -379,15 +309,13 @@ function render() {
       return;
     }
     el.innerHTML = list.map((t, i) => `
-      <div class="task" draggable="true"
-           ondragstart="dragStart(event, '${col}', ${i})" ondragend="dragEnd(event)"
-           ontouchstart="touchStart(event, '${col}', ${i})" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)">
+      <div class="task" onclick="selectTask('${col}', ${i})">
         <div class="prio prio-${t.priority || 'medium'}"></div>
         <span class="text ${col === 'done' || col === 'cancelled' ? 'done-text' : ''}">${t.text}
           ${t.category ? '<span class="badge badge-' + t.category + '">' + t.category + '</span>' : ''}
         </span>
         ${t.deadline ? '<span class="deadline">📅 ' + t.deadline + '</span>' : ''}
-        <span class="del" ontouchstart="event.stopPropagation()" onclick="deleteTask('${col}', ${i}); event.stopPropagation();">✕</span>
+        <span class="del" onclick="deleteTask('${col}', ${i}); event.stopPropagation();">✕</span>
       </div>
     `).join('');
   }
