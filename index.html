@@ -177,6 +177,7 @@
 </div>
 
 <button class="sync-btn" onclick="toggleSync()">📋 Скопировать JSON для GitHub</button>
+<button class="sync-btn" onclick="setupToken()" style="margin-top:-8px">🔐 Ввести GitHub токен (авто-синхронизация)</button>
 <div class="sync-bar" id="syncBar">
   <textarea id="jsonOut" readonly></textarea>
   <div class="btns">
@@ -239,6 +240,56 @@ function compatData(d) {
 function save() {
   data.updated = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  scheduleSync();
+}
+
+// Auto-sync to GitHub (debounced)
+let syncTimer = null;
+function scheduleSync() {
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(syncToGitHub, 1500);
+}
+
+async function syncToGitHub() {
+  const token = localStorage.getItem('github_token');
+  if (!token) return;
+  const content = JSON.stringify(data, null, 2);
+  const owner = 'dmitrykabackiy-eng';
+  const repo = 'dashboard';
+
+  try {
+    const getResp = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/tasks.json`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!getResp.ok) throw new Error('auth failed');
+    const fileInfo = await getResp.json();
+    const sha = fileInfo.sha;
+
+    const putResp = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/tasks.json`, {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'Auto-sync from dashboard',
+        content: btoa(unescape(encodeURIComponent(content))),
+        sha: sha
+      })
+    });
+
+    if (putResp.ok) {
+      document.getElementById('src').textContent = '(синхр. GitHub)';
+    }
+  } catch(e) {
+    console.log('Sync failed');
+  }
+}
+
+function setupToken() {
+  const t = prompt('GitHub токен для авто-синхронизации (создать: github.com/settings/tokens, scope: public_repo):');
+  if (t) {
+    localStorage.setItem('github_token', t);
+    syncToGitHub();
+    alert('Токен сохранён! Синхронизация активна.');
+  }
 }
 
 function addTask() {
