@@ -10,153 +10,114 @@
 <title>Dashboard — Hermes</title>
 <style>
   :root {
-    --bg: #0d1117;
-    --card: #161b22;
-    --border: #30363d;
-    --text: #c9d1d9;
-    --muted: #8b949e;
-    --red: #f85149;
-    --yellow: #d2991d;
-    --green: #3fb950;
-    --blue: #58a6ff;
+    --bg: #0d1117; --card: #161b22; --border: #30363d;
+    --text: #c9d1d9; --muted: #8b949e;
+    --red: #f85149; --yellow: #d2991d; --green: #3fb950; --blue: #58a6ff;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    padding: 12px;
-    max-width: 900px;
-    margin: 0 auto;
+    background: var(--bg); color: var(--text);
+    padding: 12px; max-width: 1000px; margin: 0 auto;
     -webkit-tap-highlight-color: transparent;
   }
-  h1 { font-size: 18px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  h1 { font-size: 18px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
   .updated { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+  
   .add-form {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    align-items: center;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; margin-bottom: 12px;
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
   }
   .add-form input, .add-form select {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 6px 8px;
-    border-radius: 6px;
-    font-size: 13px;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 6px 8px; border-radius: 6px; font-size: 13px;
   }
-  .add-form input[type="text"] { flex: 1; min-width: 120px; }
-  .add-form select { width: 80px; }
+  .add-form input[type="text"] { flex: 1; min-width: 100px; }
+  .add-form select { width: 85px; }
   .add-form button {
-    background: var(--blue);
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
+    background: var(--blue); color: #fff; border: none;
+    padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
   }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
+
+  .kanban {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px; margin-bottom: 12px;
   }
-  .card h2 { font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-  .task { padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; display: flex; align-items: center; gap: 8px; }
-  .task:last-child { border-bottom: none; }
-  .task input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--green); flex-shrink: 0; }
+  @media (max-width: 700px) { .kanban { grid-template-columns: 1fr; } }
+
+  .col {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px; min-height: 100px;
+  }
+  .col h2 { font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .col.drag-over { border-color: var(--blue); background: #161f2e; }
+
+  .task {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 9px; margin-bottom: 6px;
+    font-size: 13px; display: flex; align-items: center; gap: 8px;
+    cursor: grab; transition: opacity 0.15s;
+  }
+  .task:active { cursor: grabbing; }
+  .task.dragging { opacity: 0.4; }
+  .task .prio {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .prio-high { background: var(--red); }
+  .prio-medium { background: var(--yellow); }
+  .prio-low { background: var(--green); }
   .task .text { flex: 1; }
   .task .done-text { text-decoration: line-through; color: var(--muted); }
   .task .deadline { font-size: 11px; color: var(--muted); white-space: nowrap; }
   .task .del {
-    color: var(--red);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    flex-shrink: 0;
+    color: var(--red); cursor: pointer; font-size: 14px;
+    padding: 2px 5px; border-radius: 4px; flex-shrink: 0;
   }
-  .task .del:hover { background: #3a1a1a; }
-  .note { padding: 5px 0; font-size: 13px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); }
-  .note:last-child { border-bottom: none; }
-  .note .ntext { flex: 1; color: var(--muted); }
-  .note .del { color: var(--red); cursor: pointer; font-size: 14px; padding: 2px 6px; }
   .badge {
-    display: inline-block;
-    font-size: 10px;
-    padding: 1px 5px;
-    border-radius: 8px;
-    margin-left: 4px;
+    display: inline-block; font-size: 10px; padding: 1px 5px;
+    border-radius: 8px; margin-left: 4px;
   }
   .badge-work { background: #1f3a5f; color: var(--blue); }
   .badge-home { background: #2d1f3a; color: #bc8cff; }
   .badge-health { background: #1f3a2d; color: var(--green); }
-  .empty { color: var(--muted); font-size: 13px; font-style: italic; }
-  .full-width { grid-column: 1 / -1; }
-  .note-form {
-    display: flex;
-    gap: 6px;
-    margin-top: 8px;
-  }
+  .empty { color: var(--muted); font-size: 12px; font-style: italic; padding: 8px 0; }
+
+  .bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 700px) { .bottom { grid-template-columns: 1fr; } }
+  
+  .note { padding: 5px 0; font-size: 13px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); }
+  .note:last-child { border-bottom: none; }
+  .note .ntext { flex: 1; color: var(--muted); }
+  .note .del { color: var(--red); cursor: pointer; font-size: 14px; padding: 2px 6px; }
+  .note-form { display: flex; gap: 6px; margin-top: 8px; }
   .note-form input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 5px 8px;
-    border-radius: 6px;
-    font-size: 12px;
+    flex: 1; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 5px 8px; border-radius: 6px; font-size: 12px;
   }
   .note-form button {
-    background: var(--blue);
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
+    background: var(--blue); color: #fff; border: none;
+    padding: 5px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
   }
+  .deadline-task { padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .deadline-task:last-child { border-bottom: none; }
+  .deadline-task .dl { font-size: 11px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+
   .sync-btn {
-    display: block;
-    margin: 16px auto;
-    background: var(--border);
-    color: var(--muted);
-    border: 1px solid var(--border);
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-    text-align: center;
+    display: block; margin: 14px auto;
+    background: var(--border); color: var(--muted);
+    border: 1px solid var(--border); padding: 6px 14px;
+    border-radius: 8px; font-size: 12px; cursor: pointer; text-align: center;
   }
   .sync-bar {
-    display: none;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--card);
-    border-top: 1px solid var(--border);
-    padding: 10px;
-    text-align: center;
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--card); border-top: 1px solid var(--border);
+    padding: 10px; text-align: center;
   }
   .sync-bar textarea {
-    width: 100%;
-    height: 80px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 6px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-family: monospace;
+    width: 100%; height: 70px; background: var(--bg);
+    border: 1px solid var(--border); color: var(--text);
+    padding: 6px; border-radius: 6px; font-size: 11px; font-family: monospace;
   }
   .sync-bar .btns { margin-top: 6px; display: flex; gap: 6px; justify-content: center; }
   .sync-bar button { padding: 6px 12px; border-radius: 6px; font-size: 12px; border: none; cursor: pointer; }
@@ -172,17 +133,29 @@
   <input type="text" id="newTask" placeholder="Новая задача..." autocomplete="off">
   <select id="newPrio">
     <option value="high">🔥 Срочно</option>
-    <option value="medium" selected>📋 В работе</option>
+    <option value="medium" selected>📋 Обычно</option>
     <option value="low">✅ Фон</option>
   </select>
   <button onclick="addTask()">+</button>
 </div>
 
-<div class="grid">
-  <div class="card full-width"><h2>🔥 Срочно</h2><div id="high"></div></div>
-  <div class="card"><h2>📋 В работе</h2><div id="medium"></div></div>
-  <div class="card"><h2>✅ Фон / идеи</h2><div id="low"></div></div>
-  <div class="card">
+<div class="kanban">
+  <div class="col" id="col-todo" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'todo')">
+    <h2>📋 Сделать <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-todo"></span></h2>
+    <div id="todo"></div>
+  </div>
+  <div class="col" id="col-in_progress" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'in_progress')">
+    <h2>🔄 В процессе <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-in_progress"></span></h2>
+    <div id="in_progress"></div>
+  </div>
+  <div class="col" id="col-done" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'done')">
+    <h2>✅ Выполнено <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-done"></span></h2>
+    <div id="done"></div>
+  </div>
+</div>
+
+<div class="bottom">
+  <div class="col">
     <h2>📝 Заметки</h2>
     <div id="notes"></div>
     <div class="note-form">
@@ -190,7 +163,10 @@
       <button onclick="addNote()">+</button>
     </div>
   </div>
-  <div class="card"><h2>⏰ Дедлайны</h2><div id="deadlines"></div></div>
+  <div class="col">
+    <h2>⏰ Дедлайны</h2>
+    <div id="deadlines"></div>
+  </div>
 </div>
 
 <button class="sync-btn" onclick="toggleSync()">📋 Скопировать JSON для GitHub</button>
@@ -203,60 +179,40 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'hermes_dashboard';
-let data = { high: [], medium: [], low: [], notes: [], categories: ['work','home','health'], updated: '' };
+const STORAGE_KEY = 'hermes_dashboard_v2';
+let data = { todo: [], in_progress: [], done: [], notes: [], updated: '' };
+let dragTask = null;
 
 function mergeData(local, remote) {
-  // Start with remote as base
   const merged = JSON.parse(JSON.stringify(remote));
-  
   function mergeBucket(bucket) {
     if (!local[bucket]) return;
     local[bucket].forEach(lt => {
-      // Find matching task by text
       const existing = merged[bucket].find(rt => rt.text === lt.text);
-      if (!existing) {
-        // New local task — add it
-        merged[bucket].push(lt);
-      } else {
-        // Keep done status if either says done
-        if (lt.done) existing.done = true;
-        // Keep category/deadline from local if set
-        if (lt.category) existing.category = lt.category;
-        if (lt.deadline) existing.deadline = lt.deadline;
-      }
+      if (!existing) merged[bucket].push(lt);
+      else { if (lt.deadline) existing.deadline = lt.deadline; if (lt.category) existing.category = lt.category; }
     });
   }
-  
-  mergeBucket('high');
-  mergeBucket('medium');
-  mergeBucket('low');
-  
-  // Merge notes — add local notes not in remote
-  if (local.notes) {
-    local.notes.forEach(n => {
-      if (!merged.notes.includes(n)) merged.notes.push(n);
-    });
-  }
-  
+  mergeBucket('todo'); mergeBucket('in_progress'); mergeBucket('done');
+  if (local.notes) local.notes.forEach(n => { if (!merged.notes.includes(n)) merged.notes.push(n); });
   return merged;
 }
 
 function load() {
   const cached = localStorage.getItem(STORAGE_KEY);
   fetch('tasks.json?v=' + Date.now())
-    .then(r => r.json())
+    .then(r => { if (!r.ok) throw new Error('fail'); return r.json(); })
     .then(remote => {
+      const compat = compatData(remote);
       if (cached) {
         const local = JSON.parse(cached);
-        data = mergeData(local, remote);
+        data = mergeData(local, compat);
         document.getElementById('src').textContent = '(слияние)';
       } else {
-        data = remote;
+        data = compat;
         document.getElementById('src').textContent = '(GitHub)';
       }
-      save();
-      render();
+      save(); render();
     })
     .catch(() => {
       if (cached) { data = JSON.parse(cached); document.getElementById('src').textContent = '(локально)'; }
@@ -264,20 +220,28 @@ function load() {
     });
 }
 
+// Convert old priority-based format to new status-based format
+function compatData(d) {
+  if (d.todo !== undefined) return d; // Already v2
+  const r = { todo: [], in_progress: [], done: [], notes: d.notes || [], updated: d.updated };
+  ['high', 'medium', 'low'].forEach(p => {
+    if (d[p]) d[p].forEach(t => { if (t.done) r.done.push(t); else r.todo.push(t); });
+  });
+  return r;
+}
+
 function save() {
   data.updated = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  render();
 }
 
 function addTask() {
   const input = document.getElementById('newTask');
   const text = input.value.trim();
   if (!text) return;
-  const priority = document.getElementById('newPrio').value;
-  data[priority].push({ text, priority, done: false });
+  data.todo.push({ text, priority: document.getElementById('newPrio').value });
   input.value = '';
-  save();
+  save(); render();
 }
 
 function addNote() {
@@ -286,93 +250,111 @@ function addNote() {
   if (!text) return;
   data.notes.push(text);
   input.value = '';
-  save();
+  save(); render();
 }
 
-function toggleTask(priority, idx) {
-  data[priority][idx].done = !data[priority][idx].done;
-  save();
-}
-
-function deleteTask(priority, idx) {
-  data[priority].splice(idx, 1);
-  save();
+function deleteTask(column, idx) {
+  data[column].splice(idx, 1);
+  save(); render();
 }
 
 function deleteNote(idx) {
   data.notes.splice(idx, 1);
-  save();
+  save(); render();
+}
+
+// Drag & Drop
+function dragStart(e, column, idx) {
+  dragTask = { column, idx };
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+}
+function dragEnd(e) { e.target.classList.remove('dragging'); dragTask = null; }
+
+function dragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function drop(e, targetCol) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragTask) return;
+  const { column, idx } = dragTask;
+  if (column === targetCol) return;
+  const task = data[column].splice(idx, 1)[0];
+  data[targetCol].push(task);
+  save(); render();
+  dragTask = null;
 }
 
 function render() {
   document.getElementById('ts').textContent = new Date(data.updated).toLocaleString('ru-RU');
 
-  function renderTasks(list, containerId, priority) {
-    const el = document.getElementById(containerId);
-    if (!list || list.length === 0) {
-      el.innerHTML = '<div class="empty">Пока пусто</div>';
+  function renderCol(col) {
+    const el = document.getElementById(col);
+    const list = data[col] || [];
+    document.getElementById('cnt-' + col).textContent = list.length ? '(' + list.length + ')' : '';
+    if (list.length === 0) {
+      el.innerHTML = '<div class="empty">Пусто</div>';
       return;
     }
     el.innerHTML = list.map((t, i) => `
-      <div class="task">
-        <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${priority}', ${i})">
-        <span class="text ${t.done ? 'done-text' : ''}">${t.text}
+      <div class="task" draggable="true"
+           ondragstart="dragStart(event, '${col}', ${i})" ondragend="dragEnd(event)">
+        <div class="prio prio-${t.priority || 'medium'}"></div>
+        <span class="text ${col === 'done' ? 'done-text' : ''}">${t.text}
           ${t.category ? '<span class="badge badge-' + t.category + '">' + t.category + '</span>' : ''}
         </span>
         ${t.deadline ? '<span class="deadline">📅 ' + t.deadline + '</span>' : ''}
-        <span class="del" onclick="deleteTask('${priority}', ${i})">✕</span>
+        <span class="del" onclick="deleteTask('${col}', ${i}); event.stopPropagation();">✕</span>
       </div>
     `).join('');
   }
-
-  renderTasks(data.high, 'high', 'high');
-  renderTasks(data.medium, 'medium', 'medium');
-  renderTasks(data.low, 'low', 'low');
+  renderCol('todo');
+  renderCol('in_progress');
+  renderCol('done');
 
   const notesEl = document.getElementById('notes');
   if (!data.notes || data.notes.length === 0) {
     notesEl.innerHTML = '<div class="empty">Пока пусто</div>';
   } else {
     notesEl.innerHTML = data.notes.map((n, i) => `
-      <div class="note">
-        <span class="ntext">${n}</span>
+      <div class="note"><span class="ntext">${n}</span>
         <span class="del" onclick="deleteNote(${i})">✕</span>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
   const dlEl = document.getElementById('deadlines');
-  const all = [...(data.high||[]), ...(data.medium||[])].filter(t => t.deadline && !t.done);
+  const all = [...data.todo, ...data.in_progress].filter(t => t.deadline);
   all.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
   if (all.length === 0) {
-    dlEl.innerHTML = '<div class="empty">Нет активных дедлайнов</div>';
+    dlEl.innerHTML = '<div class="empty">Нет дедлайнов</div>';
   } else {
     dlEl.innerHTML = all.slice(0, 7).map(t => `
-      <div class="task">
-        <span class="text">${t.text}</span>
-        <span class="deadline">📅 ${t.deadline}</span>
-      </div>
-    `).join('');
+      <div class="deadline-task">
+        <div class="prio prio-${t.priority || 'medium'}"></div>
+        <span>${t.text}</span>
+        <span class="dl">📅 ${t.deadline}</span>
+      </div>`).join('');
   }
 }
 
 function toggleSync() {
   const bar = document.getElementById('syncBar');
-  const visible = bar.style.display === 'block';
-  bar.style.display = visible ? 'none' : 'block';
-  if (!visible) {
-    document.getElementById('jsonOut').value = JSON.stringify(data, null, 2);
-  }
+  const v = bar.style.display === 'block';
+  bar.style.display = v ? 'none' : 'block';
+  if (!v) document.getElementById('jsonOut').value = JSON.stringify(data, null, 2);
 }
-
 function copyJson() {
   const ta = document.getElementById('jsonOut');
-  ta.select();
-  document.execCommand('copy');
+  ta.select(); document.execCommand('copy');
   alert('Скопировано! Вставь в tasks.json на GitHub → Commit.');
 }
 
-// Enter key to submit
 document.getElementById('newTask').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
 document.getElementById('newNote').addEventListener('keydown', e => { if (e.key === 'Enter') addNote(); });
 

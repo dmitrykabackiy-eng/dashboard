@@ -1,52 +1,13 @@
 {
-  "updated": "2026-07-15T15:45:54Z",
-  "high": [
-    {
-      "text": "Тестовый таск — настроить дашборд",
-      "priority": "high",
-      "done": true,
-      "category": "work",
-      "deadline": "2026-07-15"
-    },
-    {
-      "text": "Распечатать модель для вставки молда крыши",
-      "priority": "high",
-      "done": false,
-      "category": "work",
-      "deadline": "2026-07-15"
-    }
+  "todo": [
+    {"text": "Добавить в Jira тикет информацию для Pablo (frontend deck)", "priority": "medium", "category": "work"},
+    {"text": "Затащить все металлические профиля внутрь фабрики и наставить их на Гонзало для покраски", "priority": "medium", "category": "work"},
+    {"text": "Добавить недостающие пылесосы в приложение", "priority": "medium", "category": "work"},
+    {"text": "Сделать обслуживание гидравлической системы тестового рига + запустить предложение по улучшению гидравлической системы", "priority": "medium", "category": "work"},
+    {"text": "Распечатать модель для вставки молда крыши", "priority": "high", "category": "work", "deadline": "2026-07-15"}
   ],
-  "medium": [
-    {
-      "text": "Добавить в Jira тикет информацию для Pablo (frontend deck)",
-      "priority": "medium",
-      "done": false,
-      "category": "work"
-    },
-    {
-      "text": "Затащить все металлические профиля внутрь фабрики и наставить их на Гонзало для покраски",
-      "priority": "medium",
-      "done": false,
-      "category": "work"
-    },
-    {
-      "text": "Добавить недостающие пылесосы в приложение",
-      "priority": "medium",
-      "done": false,
-      "category": "work"
-    },
-    {
-      "text": "Сделать обслуживание гидравлической системы тестового рига + запустить предложение по получению гидравлической системы",
-      "priority": "medium",
-      "done": false,
-      "category": "work"
-    }
-  ],
-  "low": [],
+  "in_progress": [],
+  "done": [],
   "notes": [],
-  "categories": [
-    "work",
-    "home",
-    "health"
-  ]
+  "updated": "2026-07-15T16:00:00Z"
 }
