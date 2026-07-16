@@ -190,78 +190,19 @@
 const STORAGE_KEY = 'hermes_dashboard_v2';
 let data = { todo: [], in_progress: [], done: [], cancelled: [], notes: [], updated: '' };
 
-function mergeData(local, remote) {
-  const merged = JSON.parse(JSON.stringify(remote));
-
-  // For each local task, find it in ANY remote column
-  const columns = ['todo', 'in_progress', 'done', 'cancelled'];
-
-  columns.forEach(localCol => {
-    if (!local[localCol]) return;
-    local[localCol].forEach(lt => {
-      // Find this task in ANY remote column
-      let foundCol = null;
-      let foundIdx = -1;
-      for (const remoteCol of columns) {
-        if (!merged[remoteCol]) continue;
-        foundIdx = merged[remoteCol].findIndex(rt => rt.text === lt.text);
-        if (foundIdx !== -1) { foundCol = remoteCol; break; }
-      }
-
-      if (foundCol) {
-        // Task exists in remote
-        if (foundCol !== localCol) {
-          // Moved to different column — remove from old, add to new
-          const task = merged[foundCol].splice(foundIdx, 1)[0];
-          if (lt.deadline) task.deadline = lt.deadline;
-          if (lt.category) task.category = lt.category;
-          merged[localCol].push(task);
-        } else {
-          // Same column — just update metadata
-          const task = merged[foundCol][foundIdx];
-          if (lt.deadline) task.deadline = lt.deadline;
-          if (lt.category) task.category = lt.category;
-        }
-      } else {
-        // New task — add to local column
-        merged[localCol].push(JSON.parse(JSON.stringify(lt)));
-      }
-    });
-  });
-
-  // Remove from remote any tasks that are NOT in local anywhere
-  // (user deleted them locally)
-  const allLocalTexts = new Set();
-  columns.forEach(c => { if (local[c]) local[c].forEach(t => allLocalTexts.add(t.text)); });
-  columns.forEach(c => {
-    if (merged[c]) merged[c] = merged[c].filter(t => allLocalTexts.has(t.text));
-  });
-
-  // Merge notes
-  if (local.notes) local.notes.forEach(n => { if (!merged.notes.includes(n)) merged.notes.push(n); });
-  merged.notes = merged.notes.filter(n => local.notes ? local.notes.includes(n) : false);
-
-  return merged;
-}
-
 function load() {
-  const cached = localStorage.getItem(STORAGE_KEY);
   fetch('tasks.json?v=' + Date.now())
     .then(r => { if (!r.ok) throw new Error('fail'); return r.json(); })
     .then(remote => {
-      const compat = compatData(remote);
-      if (cached) {
-        const local = JSON.parse(cached);
-        data = mergeData(local, compat);
-        document.getElementById('src').textContent = '(слияние)';
-      } else {
-        data = compat;
-        document.getElementById('src').textContent = '(GitHub)';
-      }
-      save(); render();
+      data = compatData(remote);
+      document.getElementById('src').textContent = '(GitHub)';
+      // Save to localStorage as offline backup
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      render();
     })
     .catch(() => {
-      if (cached) { data = JSON.parse(cached); document.getElementById('src').textContent = '(локально)'; }
+      const cached = localStorage.getItem(STORAGE_KEY);
+      if (cached) { data = JSON.parse(cached); document.getElementById('src').textContent = '(офлайн)'; }
       render();
     });
 }
