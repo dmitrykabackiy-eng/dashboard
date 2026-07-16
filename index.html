@@ -267,18 +267,34 @@ function deleteNote(idx) {
   save(); render();
 }
 
-// Drag & Drop
+// Drag & Drop (mouse + touch)
+let touchClone = null;
+let touchStartX, touchStartY;
+let touchMoved = false;
+
+function moveTask(fromCol, fromIdx, toCol) {
+  if (fromCol === toCol) return;
+  const task = data[fromCol].splice(fromIdx, 1)[0];
+  data[toCol].push(task);
+  save(); render();
+}
+
 function dragStart(e, column, idx) {
   dragTask = { column, idx };
   e.target.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', '');
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', '');
+  }
 }
-function dragEnd(e) { e.target.classList.remove('dragging'); dragTask = null; }
+function dragEnd(e) {
+  e.target.classList.remove('dragging');
+  dragTask = null;
+}
 
 function dragOver(e) {
   e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
   e.currentTarget.classList.add('drag-over');
 }
 function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
@@ -287,12 +303,68 @@ function drop(e, targetCol) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
   if (!dragTask) return;
-  const { column, idx } = dragTask;
-  if (column === targetCol) return;
-  const task = data[column].splice(idx, 1)[0];
-  data[targetCol].push(task);
-  save(); render();
+  moveTask(dragTask.column, dragTask.idx, targetCol);
   dragTask = null;
+}
+
+// Touch support for mobile
+function touchStart(e, col, idx) {
+  if (e.touches.length !== 1) return;
+  touchMoved = false;
+  dragTask = { column: col, idx: idx };
+  const t = e.touches[0];
+  touchStartX = t.clientX; touchStartY = t.clientY;
+  const el = e.currentTarget;
+  // Create floating clone
+  touchClone = el.cloneNode(true);
+  touchClone.style.position = 'fixed';
+  touchClone.style.zIndex = '9999';
+  touchClone.style.width = el.offsetWidth + 'px';
+  touchClone.style.opacity = '0.85';
+  touchClone.style.pointerEvents = 'none';
+  touchClone.style.left = (t.clientX - 40) + 'px';
+  touchClone.style.top = (t.clientY - 20) + 'px';
+  document.body.appendChild(touchClone);
+  el.classList.add('dragging');
+}
+
+function touchMove(e) {
+  if (!touchClone) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  if (Math.abs(t.clientX - touchStartX) > 5 || Math.abs(t.clientY - touchStartY) > 5) {
+    touchMoved = true;
+  }
+  touchClone.style.left = (t.clientX - 40) + 'px';
+  touchClone.style.top = (t.clientY - 15) + 'px';
+  // Highlight column under finger
+  document.querySelectorAll('.col').forEach(c => c.classList.remove('drag-over'));
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  if (el) {
+    const col = el.closest('.col');
+    if (col) col.classList.add('drag-over');
+  }
+}
+
+function touchEnd(e) {
+  if (touchClone) { touchClone.remove(); touchClone = null; }
+  document.querySelectorAll('.col').forEach(c => c.classList.remove('drag-over'));
+  const el = e.currentTarget;
+  el.classList.remove('dragging');
+  if (!dragTask || !touchMoved) { dragTask = null; return; }
+  const t = e.changedTouches[0];
+  const under = document.elementFromPoint(t.clientX, t.clientY);
+  if (under) {
+    const col = under.closest('.col');
+    if (col) {
+      const targetCol = col.querySelector('[id]')?.id;
+      if (targetCol && data[targetCol] !== undefined) {
+        moveTask(dragTask.column, dragTask.idx, targetCol);
+      }
+    }
+  }
+  dragTask = null;
+  touchMoved = false;
 }
 
 function render() {
@@ -308,13 +380,14 @@ function render() {
     }
     el.innerHTML = list.map((t, i) => `
       <div class="task" draggable="true"
-           ondragstart="dragStart(event, '${col}', ${i})" ondragend="dragEnd(event)">
+           ondragstart="dragStart(event, '${col}', ${i})" ondragend="dragEnd(event)"
+           ontouchstart="touchStart(event, '${col}', ${i})" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)">
         <div class="prio prio-${t.priority || 'medium'}"></div>
-        <span class="text ${col === 'done' ? 'done-text' : ''}">${t.text}
+        <span class="text ${col === 'done' || col === 'cancelled' ? 'done-text' : ''}">${t.text}
           ${t.category ? '<span class="badge badge-' + t.category + '">' + t.category + '</span>' : ''}
         </span>
         ${t.deadline ? '<span class="deadline">📅 ' + t.deadline + '</span>' : ''}
-        <span class="del" onclick="deleteTask('${col}', ${i}); event.stopPropagation();">✕</span>
+        <span class="del" ontouchstart="event.stopPropagation()" onclick="deleteTask('${col}', ${i}); event.stopPropagation();">✕</span>
       </div>
     `).join('');
   }
