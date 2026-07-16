@@ -206,23 +206,56 @@
 const STORAGE_KEY = 'hermes_dashboard';
 let data = { high: [], medium: [], low: [], notes: [], categories: ['work','home','health'], updated: '' };
 
+function mergeData(local, remote) {
+  // Start with remote as base
+  const merged = JSON.parse(JSON.stringify(remote));
+  
+  function mergeBucket(bucket) {
+    if (!local[bucket]) return;
+    local[bucket].forEach(lt => {
+      // Find matching task by text
+      const existing = merged[bucket].find(rt => rt.text === lt.text);
+      if (!existing) {
+        // New local task — add it
+        merged[bucket].push(lt);
+      } else {
+        // Keep done status if either says done
+        if (lt.done) existing.done = true;
+        // Keep category/deadline from local if set
+        if (lt.category) existing.category = lt.category;
+        if (lt.deadline) existing.deadline = lt.deadline;
+      }
+    });
+  }
+  
+  mergeBucket('high');
+  mergeBucket('medium');
+  mergeBucket('low');
+  
+  // Merge notes — add local notes not in remote
+  if (local.notes) {
+    local.notes.forEach(n => {
+      if (!merged.notes.includes(n)) merged.notes.push(n);
+    });
+  }
+  
+  return merged;
+}
+
 function load() {
-  // Try localStorage first, then fetch
   const cached = localStorage.getItem(STORAGE_KEY);
   fetch('tasks.json?v=' + Date.now())
     .then(r => r.json())
     .then(remote => {
       if (cached) {
         const local = JSON.parse(cached);
-        // Use whichever is newer
-        const localT = new Date(local.updated || 0).getTime();
-        const remoteT = new Date(remote.updated || 0).getTime();
-        if (localT > remoteT) { data = local; document.getElementById('src').textContent = '(локально)'; }
-        else { data = remote; document.getElementById('src').textContent = '(GitHub)'; }
+        data = mergeData(local, remote);
+        document.getElementById('src').textContent = '(слияние)';
       } else {
         data = remote;
         document.getElementById('src').textContent = '(GitHub)';
       }
+      save();
       render();
     })
     .catch(() => {
