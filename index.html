@@ -41,10 +41,10 @@
   }
 
   .kanban {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 10px; margin-bottom: 12px;
   }
-  @media (max-width: 700px) { .kanban { grid-template-columns: 1fr; } }
+  @media (max-width: 700px) { .kanban { grid-template-columns: 1fr 1fr; } }
 
   .col {
     background: var(--card); border: 1px solid var(--border);
@@ -152,6 +152,10 @@
     <h2>✅ Выполнено <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-done"></span></h2>
     <div id="done"></div>
   </div>
+  <div class="col" id="col-cancelled" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'cancelled')">
+    <h2>🚫 Отменено <span style="font-size:11px;color:var(--muted);font-weight:normal" id="cnt-cancelled"></span></h2>
+    <div id="cancelled"></div>
+  </div>
 </div>
 
 <div class="bottom">
@@ -180,7 +184,7 @@
 
 <script>
 const STORAGE_KEY = 'hermes_dashboard_v2';
-let data = { todo: [], in_progress: [], done: [], notes: [], updated: '' };
+let data = { todo: [], in_progress: [], done: [], cancelled: [], notes: [], updated: '' };
 let dragTask = null;
 
 function mergeData(local, remote) {
@@ -193,7 +197,7 @@ function mergeData(local, remote) {
       else { if (lt.deadline) existing.deadline = lt.deadline; if (lt.category) existing.category = lt.category; }
     });
   }
-  mergeBucket('todo'); mergeBucket('in_progress'); mergeBucket('done');
+  mergeBucket('todo'); mergeBucket('in_progress'); mergeBucket('done'); mergeBucket('cancelled');
   if (local.notes) local.notes.forEach(n => { if (!merged.notes.includes(n)) merged.notes.push(n); });
   return merged;
 }
@@ -317,6 +321,7 @@ function render() {
   renderCol('todo');
   renderCol('in_progress');
   renderCol('done');
+  renderCol('cancelled');
 
   const notesEl = document.getElementById('notes');
   if (!data.notes || data.notes.length === 0) {
