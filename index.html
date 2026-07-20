@@ -191,18 +191,29 @@ const STORAGE_KEY = 'hermes_dashboard_v2';
 let data = { todo: [], in_progress: [], done: [], cancelled: [], notes: [], updated: '' };
 
 function load() {
+  const cached = localStorage.getItem(STORAGE_KEY);
+  const localData = cached ? JSON.parse(cached) : null;
+
   fetch('tasks.json?v=' + Date.now())
     .then(r => { if (!r.ok) throw new Error('fail'); return r.json(); })
     .then(remote => {
-      data = compatData(remote);
-      document.getElementById('src').textContent = '(GitHub)';
-      // Save to localStorage as offline backup
+      remote = compatData(remote);
+      const localTime = localData ? new Date(localData.updated || 0).getTime() : 0;
+      const remoteTime = new Date(remote.updated || 0).getTime();
+
+      // If local has unsaved changes (newer), use local
+      if (localTime > remoteTime) {
+        data = localData;
+        document.getElementById('src').textContent = '(не сохранено в GitHub)';
+      } else {
+        data = remote;
+        document.getElementById('src').textContent = '(GitHub)';
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       render();
     })
     .catch(() => {
-      const cached = localStorage.getItem(STORAGE_KEY);
-      if (cached) { data = JSON.parse(cached); document.getElementById('src').textContent = '(офлайн)'; }
+      if (localData) { data = localData; document.getElementById('src').textContent = '(офлайн)'; }
       render();
     });
 }
@@ -220,19 +231,17 @@ function compatData(d) {
 function save() {
   data.updated = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  scheduleSync();
+  syncToGitHub();
 }
 
-// Auto-sync to GitHub (debounced)
-let syncTimer = null;
-function scheduleSync() {
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(syncToGitHub, 1500);
-}
-
+// Auto-sync to GitHub (immediate)
 async function syncToGitHub() {
   const token = localStorage.getItem('github_token');
-  if (!token) return;
+  if (!token) {
+    document.getElementById('src').textContent = '(нет токена — сохранено локально)';
+    return;
+  }
+  document.getElementById('src').textContent = '(синхронизация...)';
   const content = JSON.stringify(data, null, 2);
   const owner = 'dmitrykabackiy-eng';
   const repo = 'dashboard';
@@ -241,7 +250,7 @@ async function syncToGitHub() {
     const getResp = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/tasks.json`, {
       headers: { 'Authorization': 'Bearer ' + token }
     });
-    if (!getResp.ok) throw new Error('auth failed');
+    if (!getResp.ok) throw new Error('auth');
     const fileInfo = await getResp.json();
     const sha = fileInfo.sha;
 
@@ -249,17 +258,19 @@ async function syncToGitHub() {
       method: 'PUT',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: 'Auto-sync from dashboard',
+        message: 'Update from dashboard',
         content: btoa(unescape(encodeURIComponent(content))),
         sha: sha
       })
     });
 
     if (putResp.ok) {
-      document.getElementById('src').textContent = '(синхр. GitHub)';
+      document.getElementById('src').textContent = '(GitHub ✓)';
+    } else {
+      document.getElementById('src').textContent = '(ошибка синхронизации)';
     }
   } catch(e) {
-    console.log('Sync failed');
+    document.getElementById('src').textContent = '(ошибка синхронизации)';
   }
 }
 
