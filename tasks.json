@@ -17,19 +17,18 @@
       "deadline": "2026-07-19"
     }
   ],
-  "in_progress": [
-    {
-      "text": "Распечатать модель для вставки молда крыши",
-      "priority": "high",
-      "category": "work",
-      "deadline": "2026-07-15"
-    }
-  ],
+  "in_progress": [],
   "done": [
     {
       "text": "Добавить недостающие пылесосы в приложение",
       "priority": "medium",
       "category": "work"
+    },
+    {
+      "text": "Распечатать модель для вставки молда крыши",
+      "priority": "high",
+      "category": "work",
+      "deadline": "2026-07-15"
     }
   ],
   "cancelled": [
@@ -40,5 +39,5 @@
     }
   ],
   "notes": [],
-  "updated": "2026-07-16T17:24:59Z"
+  "updated": "2026-07-20T12:41:45.521Z"
 }
