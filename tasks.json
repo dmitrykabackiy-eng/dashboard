@@ -20,6 +20,11 @@
       "text": "Добавить исправления от Давида в приложение",
       "priority": "medium",
       "category": "work"
+    },
+    {
+      "text": "Внедрить стремянку для молда крыши",
+      "priority": "medium",
+      "category": "work"
     }
   ],
   "in_progress": [],
@@ -44,5 +49,5 @@
     }
   ],
   "notes": [],
-  "updated": "2026-07-21T06:23:33Z"
+  "updated": "2026-07-21T20:21:44Z"
 }
