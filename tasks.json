@@ -15,6 +15,11 @@
       "priority": "medium",
       "category": "home",
       "deadline": "2026-07-19"
+    },
+    {
+      "text": "Добавить исправления от Давида в приложение",
+      "priority": "medium",
+      "category": "work"
     }
   ],
   "in_progress": [],
@@ -39,5 +44,5 @@
     }
   ],
   "notes": [],
-  "updated": "2026-07-20T12:41:45.521Z"
+  "updated": "2026-07-21T06:23:33Z"
 }
