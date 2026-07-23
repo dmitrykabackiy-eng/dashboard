@@ -25,6 +25,11 @@
       "text": "Внедрить стремянку для молда крыши",
       "priority": "medium",
       "category": "work"
+    },
+    {
+      "text": "Проверить предложенный Яном набор молдов для потолка",
+      "priority": "medium",
+      "category": "work"
     }
   ],
   "in_progress": [],
@@ -49,5 +54,5 @@
     }
   ],
   "notes": [],
-  "updated": "2026-07-21T20:21:44Z"
+  "updated": "2026-07-23T17:29:29Z"
 }
