@@ -15,11 +15,6 @@
       "text": "Добавить исправления от Давида в приложение",
       "priority": "medium",
       "category": "work"
-    },
-    {
-      "text": "Проверить предложенный Яном набор молдов для потолка",
-      "priority": "medium",
-      "category": "work"
     }
   ],
   "in_progress": [
@@ -45,6 +40,11 @@
       "text": "Добавить в Jira тикет информацию для Pablo (frontend deck)",
       "priority": "medium",
       "category": "work"
+    },
+    {
+      "text": "Проверить предложенный Яном набор молдов для потолка",
+      "priority": "medium",
+      "category": "work"
     }
   ],
   "cancelled": [
@@ -55,5 +55,5 @@
     }
   ],
   "notes": [],
-  "updated": "2026-07-24T12:21:56.379Z"
+  "updated": "2026-07-24T12:51:32.259Z"
 }
