@@ -1,11 +1,6 @@
 {
   "todo": [
     {
-      "text": "Добавить в Jira тикет информацию для Pablo (frontend deck)",
-      "priority": "medium",
-      "category": "work"
-    },
-    {
       "text": "Сделать обслуживание гидравлической системы тестового рига + запустить предложение по улучшению гидравлической системы",
       "priority": "medium",
       "category": "work"
@@ -44,6 +39,11 @@
       "priority": "high",
       "category": "work",
       "deadline": "2026-07-15"
+    },
+    {
+      "text": "Добавить в Jira тикет информацию для Pablo (frontend deck)",
+      "priority": "medium",
+      "category": "work"
     }
   ],
   "cancelled": [
@@ -54,5 +54,5 @@
     }
   ],
   "notes": [],
-  "updated": "2026-07-23T17:29:29Z"
+  "updated": "2026-07-24T11:45:36.807Z"
 }
