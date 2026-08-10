@@ -6,12 +6,6 @@
       "category": "work"
     },
     {
-      "text": "Снять дверцу сплит-системы и помыть",
-      "priority": "medium",
-      "category": "home",
-      "deadline": "2026-07-19"
-    },
-    {
       "text": "Добавить исправления от Давида в приложение",
       "priority": "medium",
       "category": "work"
@@ -45,6 +39,12 @@
       "text": "Проверить предложенный Яном набор молдов для потолка",
       "priority": "medium",
       "category": "work"
+    },
+    {
+      "text": "Снять дверцу сплит-системы и помыть",
+      "priority": "medium",
+      "category": "home",
+      "deadline": "2026-07-19"
     }
   ],
   "cancelled": [
@@ -55,5 +55,5 @@
     }
   ],
   "notes": [],
-  "updated": "2026-07-24T12:51:32.259Z"
+  "updated": "2026-08-10T13:55:20.369Z"
 }
